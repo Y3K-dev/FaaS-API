@@ -57,3 +57,6 @@
   await axios.post("/api/v1/:compressedToken/userFunction") //compressed token is the first 10 characters of your hashed email
 
 ```
+
+## License
+### [wtfpl](https://choosealicense.com/licenses/wtfpl/)
