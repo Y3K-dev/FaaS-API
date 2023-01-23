@@ -27,7 +27,6 @@ export async function deployController (
   request: FastifyRequest<{Body: userCode}>, reply: FastifyReply) {
   
   const token = request.headers.authorization;
-  console.log(token);
 
   if (!token || token === "") {
     reply.status(401).send({
@@ -49,6 +48,7 @@ export async function deployController (
     case "javascript":
       //TODO use docker
       const result = await vm_run(code);
+
       /* 
         Response body:
         {
