@@ -17,11 +17,7 @@
 
 * Response: 200, 400, 409
 
-2. GET /api/v1/verify
-* Description - verify hash of email
-* Response: 200, 401
-
-3. POST /api/v1/deploy
+2. POST /api/v1/deploy
 * Description - deploy the function
 * Response body
 
@@ -34,7 +30,7 @@
 
 * Response - 200, 400, 401
 
-4. GET /api/v1/:compressedToken/userFunction
+3. GET /api/v1/:compressedToken/userFunction
 * Description - HTTP trigger for the serverless function
 * Response - 200
 
@@ -42,9 +38,6 @@
 ```js
   //Authenticate user
   await axios.post("/api/v1/auth", { email: "email@sus.com" });
-
-  //Verify user
-  await axios.get("/api/v1/verify");
 
   //Deploy function
   await axios.post("/api/v1/deploy", 
