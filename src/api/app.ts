@@ -4,7 +4,6 @@ import { client } from "./helpers/redis";
 
 // Routes
 import { authRoute } from "./services/auth/auth.route";
-import { verifyRoute } from "./services/verification/verify.route";
 import { deployRoute } from "./services/deploy/deploy.route";
 import { functionRoute } from "./services/function/function.route";
 
@@ -12,7 +11,6 @@ const server: FastifyInstance = fastify();
 
 (async () => {
   await server.register(authRoute, { prefix: "/api/v1" });
-  await server.register(verifyRoute, { prefix: "/api/v1" });
   await server.register(deployRoute, { prefix: "/api/v1" });
   await server.register(functionRoute, { prefix: "/api/v1" });
 })();
