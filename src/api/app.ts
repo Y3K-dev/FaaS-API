@@ -1,6 +1,6 @@
 import fastify, { FastifyInstance, FastifyReply } from "fastify";
 
-import { client } from "./helpers/redis";
+import { redisClient } from "./helpers/redis";
 
 // Routes
 import { authRoute } from "./services/auth/auth.route";
@@ -16,20 +16,20 @@ const server: FastifyInstance = fastify();
 })();
 
 
-//TODO deploy to railway 
+//TODO deploy to railway
 
 //** startup & shutdown events */
 
 server.addHook("onReady", async () => {
   console.log("server ready");
 
-  if (await client.ping()) {
+  if (await redisClient.ping()) {
     console.log("redis ready");
   };
 });
 
 server.addHook("onClose", async (_instance,) => {
-  await client.quit();
+  await redisClient.quit();
   console.log("redis closed");
   console.log("server closed");
 });

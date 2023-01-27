@@ -3,14 +3,14 @@ import { config } from "dotenv";
 
 config({path: require("path").resolve(__dirname, "../../config/.env")});
 
-export const client = createClient({
+export const redisClient = createClient({
   url: process.env.REDIS_URL, 
 });
 
 (async () => {
-  await client.connect();
+  await redisClient.connect();
 })();
 
-client.on("error", (err: Error) => {
+redisClient.on("error", (err: Error) => {
   console.log(`redis error: ${err}`);
 });

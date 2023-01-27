@@ -10,8 +10,6 @@ async function vm_run(code: string) {
     timeout: 1000,
     sandbox,
     sandBoxed: {
-      setTimeout: true,
-      setInterval: true,
       clearTimeout: true,
       clearInterval: true,
     },
