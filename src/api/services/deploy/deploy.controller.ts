@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import axios from "axios";
 import vm from "vm2";
 
+import { redisClient } from "../../helpers/redis";
 import { userCode } from "./deploy.schema";
 
 async function vm_run(code: string) {
@@ -17,59 +17,57 @@ async function vm_run(code: string) {
 
   const vmInstance = new vm.VM(vmInstanceConfig);
   const result = vmInstance.run(code);
-  
+
   return result;
 };
 
 export async function deployController (
   request: FastifyRequest<{Body: userCode}>, reply: FastifyReply) {
-  
-  const token = request.headers.authorization;
 
-  if (!token || token === "") {
+  const hash = request.headers.authorization as string;
+
+  if (!hash || hash === "") {
     reply.status(401).send({
-      status: 401,
       message: "unauthorized"
     });
   };
 
   const { code, language } = request.body;
 
-  if (!code || code === "") {
+  if (!code) {
     reply.status(400).send({
-      status: 400,
       message: "invalid code"
     });
   };
 
   switch (language) {
-    case "javascript":
-      //TODO use docker
-      const result = await vm_run(code);
+  case "javascript":
+    //TODO use docker
+    const result: string | number = await vm_run(code);
 
-      /* 
-        Response body:
-        {
-         "code": "function ok() {return 1}; ok();",
-         "language": "javascript"
-        }
-      */
+    /* 
+      Response body:
+      {
+      "code": "function ok() {return 1}; ok();",
+      "language": "javascript"
+      }
+    */ 
 
-     const compressedToken = (token?.slice(0, 10)) as string; 
-     const response = await axios.get(`http://localhost:3000/api/v1/${compressedToken}/userFunction?result=${result}`);
+    const email = await redisClient.get(hash);
+    const data = JSON.stringify({ email, result });
 
-     reply.status(200).send({
-        status: 200,
+    await redisClient.set(hash.split(" ")[1], data);
+
+    reply.status(200).send({
         message: "function deployed",
-        data: response.data
-      });
-      
-      break;
-    case "python":
-      reply.status(400).send({
-        status: 400,
-        message: "python runner soon™"
-      });
-      break; 
+        result
+    });
+    
+    break;
+  case "python":
+    reply.status(400).send({
+      message: "python runner soon™"
+    });
+    break; 
   };
 };

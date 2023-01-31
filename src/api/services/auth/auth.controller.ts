@@ -2,13 +2,13 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import crypto from "crypto";
 import { config } from "dotenv";
 
-import { client } from "../../helpers/redis";
+import { redisClient } from "../../helpers/redis";
 import { authEmailSchema } from "./auth.schema";
 
 config({path: require("path").resolve(__dirname, "../../../config/.env")});
 
-async function cacheHash (email: string, hash: string) {
-  await client.set(email, hash);
+async function cacheHash (hash: string, email: string) {
+  await redisClient.set(hash, email);
 };
 
 export async function authController (
@@ -18,14 +18,12 @@ export async function authController (
  
   if (email === "" || email === undefined) {
     reply.status(400).send({
-      status: 400,
       message: "email is required"
     });
   }; 
 
   if (!email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)) {
     reply.status(400).send({
-      status: 400,
       message: "invalid email"
     });
   };
@@ -34,19 +32,17 @@ export async function authController (
                      .update(email)
                      .digest("hex");
 
-  const hashCache = await client.get(hash);
+  const hashCache = await redisClient.get(hash);
   
   if (hashCache) {
     reply.status(409).send({
-      status: 409,
       message: "conflict"
     });
   } else {
-    await cacheHash(email, hash);
+    await cacheHash(hash, email);
 
     reply.header("Authorization", `Bearer ${hash}`);
     reply.status(200).send({
-      status: 200,
       message: "success"
     });
   };

@@ -1,13 +1,25 @@
 import { FastifyRequest, FastifyReply } from "fastify";
-import { resultQuery, tokenParam } from "./function.schema";
+
+import { redisClient } from "../../helpers/redis";
+import { hashParam } from "./function.schema";
 
 export async function functionController (request: FastifyRequest, reply: FastifyReply) {
-  const { result } = request.query as resultQuery;
-  const { compressedToken } = request.params as tokenParam;
+  const { hash } = request.params as hashParam;
   
+  const data = await redisClient.get(hash);
+
+  if (!data) {
+    return reply.status(400).send({
+      message: "bad request",
+    });
+  } else {
+    const result = JSON.parse(data).result;
+    reply.status(200).send({
+      result,
+    });
+  };
+
   reply.status(200).send({
-    status: 200,
     message: "ok",
-    result
   });
 };

@@ -3,7 +3,7 @@ import { functionController } from "./function.controller";
 
 export async function functionRoute (app: FastifyInstance) {
   app.get(
-    "/:compressedToken/userFunction", 
+    "/:hash/userFunction", 
     functionController
   );
 };

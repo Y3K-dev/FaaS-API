@@ -11,7 +11,7 @@
 
 ```json
   {
-    "email": "youremail@domain.com"
+    "email": "youremail@domain"
   }
 ```
 
@@ -23,16 +23,16 @@
 
 ```json
   {
-    "code": "function func(){}; func();",
+    "code": "function F(){}; F();",
     "language": "javascript"
   }
 ```
 
 * Response - 200, 400, 401
 
-3. GET /api/v1/:compressedToken/userFunction
+3. GET /api/v1/:hash/userFunction
 * Description - HTTP trigger for the serverless function
-* Response - 200
+* Response - 200, 400
 
 ## Example
 ```js
@@ -47,8 +47,7 @@
   });
 
   // HTTP trigger for function
-  await axios.post("/api/v1/:compressedToken/userFunction") //compressed token is the first 10 characters of your hashed email
-
+  await axios.get("/api/v1/:hash/userFunction")
 ```
 
 ## License
